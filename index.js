@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 require("./api/routes/courseRoute")(app);
+require("./api/routes/discussionRoute")(app);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
