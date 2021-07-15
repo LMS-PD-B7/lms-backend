@@ -73,9 +73,7 @@ module.exports = {
     update: function (req, res) {
         if (req.account) {
             let db_connect = accountModel.connectDb();
-            console.log(req.account._id);
             let query = { _id: new ObjectID(req.account._id) };
-            console.log(query);
             let values = {
                 $set: accountModel.updateAccount(req.body)
             };
