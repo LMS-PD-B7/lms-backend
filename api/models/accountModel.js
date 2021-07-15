@@ -20,7 +20,8 @@ module.exports = {
 
     updateAccount: function (account) {
         return {
-            display_name: account.display_name
+            display_name: account.display_name,
+            password: bcrypt.hashSync(account.password, 10)
         }
     },
 
