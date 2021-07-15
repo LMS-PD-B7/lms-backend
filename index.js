@@ -15,7 +15,7 @@ app.use(cors());
 const dbo = require("./db/connection");
 
 dbo.connectToServer(function (err) {
-  if (err) console.error(err);
+    if (err) console.error(err);
 });
 
 // connect to routes

@@ -2,7 +2,8 @@
 
 var courseModel = require("../models/courseModel");
 
-exports.createCourse = function (req, res) {
+module.exports = {
+  createCourse : function (req, res) {
     let newCourse = courseModel.createNewCourse(req.body);
     // console.log(newCourse);
     let db_connect = courseModel.connectDb();
@@ -18,9 +19,9 @@ exports.createCourse = function (req, res) {
             });
         }
     });
-}
+  },
 
-exports.getAllCourses = function(req, res) {
+  getAllCourses : function(req, res) {
     let db_connect = courseModel.connectDb();
   
     db_connect.find({}).toArray(function(err, course) {
@@ -33,3 +34,4 @@ exports.getAllCourses = function(req, res) {
       }
     })
   }
+}
