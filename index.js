@@ -7,7 +7,8 @@ require('dotenv').config();
 var express = require('express'),
     app = express(),
     port = process.env.PORT || 3000,
-    cors = require('cors');
+    cors = require('cors'),
+    jsonwebtoken = require("jsonwebtoken");
 
 app.use(cors());
 
@@ -22,6 +23,20 @@ dbo.connectToServer(function (err) {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(function (req, res, next) {
+    if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
+        jsonwebtoken.verify(req.headers.authorization.split(' ')[1], 'RESTFULAPIs', function (err, decode) {
+            if (err) req.account = undefined;
+            req.account = decode;
+            next();
+        });
+    } else {
+        req.account = undefined;
+        next();
+    }
+});
+
+require("./api/routes/accountRoute")(app);
 require("./api/routes/courseRoute")(app);
 require("./api/routes/discussionRoute")(app);
 
