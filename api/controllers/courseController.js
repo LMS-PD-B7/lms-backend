@@ -1,12 +1,13 @@
 'use strict';
 
-var courseModel = require("../models/courseModel");
+var courseModel = require("../models/courseModel"),
+    accountModel = require("../models/accountModel");
 
 module.exports = {
     createCourse: function (req, res) {
-        let newCourse = courseModel.createNewCourse(req.body);
-        // console.log(newCourse);
+        let newCourse = courseModel.createNewCourse(req.body, req.account);
         let db_connect = courseModel.connectDb();
+        // let newCourseList = accountModel.updateCourseList(req.body);
 
         db_connect.insertOne(newCourse, function (err, post) {
             if (err) {

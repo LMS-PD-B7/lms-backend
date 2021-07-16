@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = function (app) {
-    let courseHandler = require("../controllers/courseController");
+    let courseHandler = require("../controllers/courseController"),
+        accountHandler = require("../controllers/accountController");
 
     app.route('/course')
-        .post(courseHandler.createCourse)
+        .post(accountHandler.loginRequired, courseHandler.createCourse)
         .get(courseHandler.getAllCourses);
 }

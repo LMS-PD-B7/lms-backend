@@ -3,8 +3,8 @@
 var dbo = require('../../db/connection');
 
 module.exports = {
-    createNewCourse: function (course) {
-        const newCourse = {
+    createNewCourse: function (course, account) {
+        let newCourse = {
             title: course.title,
             description: course.description,
             enrollment_key: course.enrollment_key,
@@ -14,6 +14,7 @@ module.exports = {
             attendances: [],
             discussions: []
         }
+        newCourse.teacher.push(account.email);
 
         return newCourse;
     },
