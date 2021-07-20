@@ -80,7 +80,7 @@ module.exports = {
 
             db_connect.updateOne(query, values, function (err, account) {
                 if (err) {
-                    res.status(400).send({ message: err })
+                    return res.status(400).send({ message: err })
                 }
                 return res.status(200).json({ message: 'User Updated' });
             });
