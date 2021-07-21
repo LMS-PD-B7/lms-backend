@@ -6,13 +6,13 @@ var courseModel = require("../models/courseModel"),
 
 exports.updateCourseListAtAccount = function (req, res, course, status) {
     if (req.account) {
-        let db_connect = accountModel.connectDb();
+        let acc_db_connect = accountModel.connectDb();
         let query = { _id: new ObjectID(req.account._id) };
         let values = {
-            $set: accountModel.updateCourseList(course, status)
+            $push: accountModel.updateCourseList(req.account, course.ops[0], status)
         };
 
-        db_connect.updateOne(query, values, function (err, account) {
+        acc_db_connect.updateOne(query, values, {}, function (err, account) {
             if (err) {
                 return res.status(400).send({ message: err })
             }
@@ -23,46 +23,91 @@ exports.updateCourseListAtAccount = function (req, res, course, status) {
     }
 }
 
-module.exports = {
-    createCourse: function (req, res) {
-        let newCourse = courseModel.createNewCourse(req.body, req.account);
+exports.createCourse = function (req, res) {
+    let newCourse = courseModel.createNewCourse(req.body, req.account);
+    let db_connect = courseModel.connectDb();
+
+    db_connect.insertOne(newCourse, function (err, course) {
+        if (err) {
+            return res.status(400).send({
+                message: err
+            })
+        } else {
+            return exports.updateCourseListAtAccount(req, res, course, "Teacher");
+        }
+    });
+}
+
+exports.getAllCourses = function (req, res) {
+    let db_connect = courseModel.connectDb();
+
+    db_connect.find({}).toArray(function (err, course) {
+        if (err) {
+            return res.status(400).send({
+                message: err
+            })
+        } else {
+            return res.status(200).send(course);
+        }
+    })
+}
+
+exports.deleteCourse = async function (req, res) {
+    if (req.account) {
         let db_connect = courseModel.connectDb();
+        let acc_db_connect = accountModel.connectDb();
 
-        db_connect.insertOne(newCourse, function (err, course) {
-            if (err) {
-                return res.status(400).send({
-                    message: err
-                })
-            } else {
-                console.log(course.ops[0]);
-                let acc_db_connect = accountModel.connectDb();
-                let query = { _id: new ObjectID(req.account._id) };
-                let values = {
-                    $push: accountModel.updateCourseList(req.account, course.ops[0], "Teacher")
-                };
+        let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
 
-                console.log();
-                acc_db_connect.updateOne(query, values, {}, function (err, account) {
-                    if (err) {
-                        return res.status(400).send({ message: err })
+        if (!course || course.teacher[0] !== req.account.email) {
+            return res.status(400).send({ message: "Not authorized" });
+        }
+
+        for (const teacher of course.teacher) {
+            let teacherQuery = { email: teacher.email }
+            let teacherValues = {
+                $pull: { courseList: {
+                            id_course: req.params.id,
+                            status: "Teacher"
+                        }
                     }
-                    return res.status(200).json({ message: 'User Updated' });
-                });
-            }
-        });
-    },
+            };
+            acc_db_connect.updateOne(teacherQuery, teacherValues, {}, function (err, account) {
+                if (err) {
+                    return res.status(400).send({ message: err })
+                }
+                return res.status(200).json({ message: 'User Updated' });
+            });
+        }
 
-    getAllCourses: function (req, res) {
-        let db_connect = courseModel.connectDb();
+        for (const student of course.student) {
+            let studentQuery = { email: student.email }
+            let studentValues = {
+                $pull: { courseList: {
+                            id_course: req.params.id,
+                            status: "Student"
+                        }
+                    }
+            };
+            acc_db_connect.updateOne(studentQuery, studentValues, {}, function (err, account) {
+                if (err) {
+                    return res.status(400).send({ message: err })
+                }
+                return res.status(200).json({ message: 'User Updated' });
+            });
+        }
 
-        db_connect.find({}).toArray(function (err, course) {
+        const query = { _id: new ObjectID(req.params.id) };
+
+        db_connect.remove(query, 1, function (err, course) {
             if (err) {
-                return res.status(400).send({
-                    message: err
-                })
-            } else {
-                return res.status(200).send(course);
+                return res.status(400).send({ message: err });
             }
-        })
+
+            return res.status(200).send({ message: 'Course deleted' });
+        });
+    } else {
+        return res.status(401).send({ message: 'Invalid token' });
     }
+
 }

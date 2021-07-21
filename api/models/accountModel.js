@@ -32,18 +32,6 @@ module.exports = {
                 status: stat
             }
         }
-        // return {
-        //     course_list: account.course_list.push({
-        //         id_course: course._id,
-        //         course_title: course.title,
-        //         status: stat
-        //     })
-        // }
-        // account.course_list.push()
-        // course_list.push({
-        //     id_course: course._id,
-        //     status: stat
-        // })
     },
 
     connectDb: function () {
