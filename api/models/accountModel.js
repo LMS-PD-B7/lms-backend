@@ -8,9 +8,9 @@ module.exports = {
         let newAccount = {
             email: account.email,
             display_name: account.display_name,
+            password: bcrypt.hashSync(account.password, 10),
             course_list: []
         }
-        newAccount.password = bcrypt.hashSync(account.password, 10);
         return newAccount;
     },
 
@@ -20,7 +20,17 @@ module.exports = {
 
     updateAccount: function (account) {
         return {
-            display_name: account.display_name
+            display_name: account.display_name,
+            password: bcrypt.hashSync(account.password, 10)
+        }
+    },
+
+    updateCourseList: function (account, course, stat) {
+        return {
+            course_list: {
+                id_course: course._id,
+                status: stat
+            }
         }
     },
 

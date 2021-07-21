@@ -73,16 +73,14 @@ module.exports = {
     update: function (req, res) {
         if (req.account) {
             let db_connect = accountModel.connectDb();
-            console.log(req.account._id);
             let query = { _id: new ObjectID(req.account._id) };
-            console.log(query);
             let values = {
                 $set: accountModel.updateAccount(req.body)
             };
 
             db_connect.updateOne(query, values, function (err, account) {
                 if (err) {
-                    res.status(400).send({ message: err })
+                    return res.status(400).send({ message: err })
                 }
                 return res.status(200).json({ message: 'User Updated' });
             });
