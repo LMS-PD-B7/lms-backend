@@ -1,11 +1,19 @@
 'use strict';
 
+const { ObjectID } = require('mongodb');
 var dbo = require('../../db/connection');
 
 module.exports = {
-    createNewAttendance: function (attendance) {
+    createNewAttendance: function (attendance, account, course) {
         const newAttendance = {
-            
+            id_course: new ObjectID(course._id),
+            maker_email: new ObjectID(account.email),
+            title: attendance.title,
+            description: attendance.description,
+            date: new Date(),
+            late_limit: attendance.late_limit,
+            deadline: new Date(),
+            submission: []
         }
 
         return newAttendance;
