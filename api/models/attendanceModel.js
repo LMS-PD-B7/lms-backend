@@ -27,6 +27,14 @@ module.exports = {
         }
 
         return db.collection('attendance');
+    },
+
+    updateAttendance: function (attendance) {
+        return {
+            title: attendance.title,
+            description: attendance.description,
+            deadline: new Date()
+        }
     }
 
 }
