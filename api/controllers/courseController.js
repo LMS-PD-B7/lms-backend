@@ -1,5 +1,8 @@
 'use strict';
 
+const TEACHER_STATUS = "Teacher";
+const STUDENT_STATUS = "Student";
+
 var courseModel = require("../models/courseModel"),
     accountModel = require("../models/accountModel"),
     { ObjectID } = require('mongodb');;
@@ -33,7 +36,7 @@ exports.createCourse = function (req, res) {
                 message: err
             })
         } else {
-            return exports.updateCourseListAtAccount(req, res, course, "Teacher");
+            return exports.updateCourseListAtAccount(req, res, course, TEACHER_STATUS);
         }
     });
 }
@@ -52,8 +55,22 @@ exports.getAllCourses = function (req, res) {
     })
 }
 
-exports.unenrollCourse = function (req, res,stat) {
-    let query = { email: student.email }
+exports.getCourse = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
+
+    if (course) {
+        res.send(course);
+    } else {
+        return res.status(401).json({ message: 'Course not found' });
+    }
+}
+
+exports.unenrollCourse = function (req, res, member, stat) {
+    let acc_db_connect = accountModel.connectDb();
+
+    let query = { email: member.email }
     let values = {
         $pull: { courseList: {
                     id_course: req.params.id,
@@ -72,7 +89,6 @@ exports.unenrollCourse = function (req, res,stat) {
 exports.deleteCourse = async function (req, res) {
     if (req.account) {
         let db_connect = courseModel.connectDb();
-        let acc_db_connect = accountModel.connectDb();
 
         let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
 
@@ -81,11 +97,12 @@ exports.deleteCourse = async function (req, res) {
         }
 
         for (const teacher of course.teacher) {
+            // exports.unenrollCourse(req, res, teacher, TEACHER_STATUS);
             let teacherQuery = { email: teacher.email }
             let teacherValues = {
                 $pull: { courseList: {
                             id_course: req.params.id,
-                            status: "Teacher"
+                            status: TEACHER_STATUS
                         }
                     }
             };
@@ -98,11 +115,12 @@ exports.deleteCourse = async function (req, res) {
         }
 
         for (const student of course.student) {
+            // exports.unenrollCourse(req, res, student, STUDENT_STATUS);
             let studentQuery = { email: student.email }
             let studentValues = {
                 $pull: { courseList: {
                             id_course: req.params.id,
-                            status: "Student"
+                            status: STUDENT_STATUS
                         }
                     }
             };
