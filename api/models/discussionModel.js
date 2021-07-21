@@ -18,6 +18,17 @@ module.exports = {
         return newDiscussion;
     },
 
+    updateDiscussion: function (discussion, course) {
+        return {
+            id_course: discussion.id_course,
+            title: discussion.title,
+            description: discussion.description,
+            date: new Date(),
+            attachment: discussion.attachment,
+            comments: discussion.comments
+        }
+    },
+
     connectDb: function () {
         let db = dbo.getDb();
 

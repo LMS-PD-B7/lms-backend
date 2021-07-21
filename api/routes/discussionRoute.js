@@ -6,4 +6,6 @@ module.exports = function (app) {
     app.route('/discussion')
         .post(discussionHandler.createDiscussion)
         .get(discussionHandler.getAllDiscussion);
+    app.route('/discussion/update')
+        .put(discussionHandler.update);
 }
