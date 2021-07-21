@@ -67,16 +67,65 @@ exports.getCourse = async function (req, res) {
     }
 }
 
+exports.getStudents = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+    let acc_db_connect = accountModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
+
+    if (!course) {
+        return res.status(401).json({ message: 'Course not found' });
+    } else {
+        let studentList = [];
+        for (const studentEmail of course.student) {
+            let student = await acc_db_connect.findOne({ email: studentEmail });
+
+            if (student) {
+                studentList.push({
+                    display_name: student.display_name,
+                    email: student.email
+                })
+            }
+        }
+        res.send(studentList);
+    }
+}
+
+exports.getTeachers = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+    let acc_db_connect = accountModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
+
+    if (!course) {
+        return res.status(401).json({ message: 'Course not found' });
+    } else {
+        let teacherList = [];
+        for (const teacherEmail of course.teacher) {
+            let teacher = await acc_db_connect.findOne({ email: teacherEmail });
+
+            if (teacher) {
+                teacherList.push({
+                    display_name: teacher.display_name,
+                    email: teacher.email
+                })
+            }
+        }
+        res.send(teacherList);
+    }
+}
+
 exports.unenrollCourse = function (req, res, member, stat) {
     let acc_db_connect = accountModel.connectDb();
 
     let query = { email: member.email }
     let values = {
-        $pull: { courseList: {
-                    id_course: req.params.id,
-                    status: stat
-                }
+        $pull: {
+            courseList: {
+                id_course: req.params.id,
+                status: stat
             }
+        }
     };
     acc_db_connect.updateOne(query, values, {}, function (err, account) {
         if (err) {
@@ -100,11 +149,12 @@ exports.deleteCourse = async function (req, res) {
             // exports.unenrollCourse(req, res, teacher, TEACHER_STATUS);
             let teacherQuery = { email: teacher.email }
             let teacherValues = {
-                $pull: { courseList: {
-                            id_course: req.params.id,
-                            status: TEACHER_STATUS
-                        }
+                $pull: {
+                    courseList: {
+                        id_course: req.params.id,
+                        status: TEACHER_STATUS
                     }
+                }
             };
             acc_db_connect.updateOne(teacherQuery, teacherValues, {}, function (err, account) {
                 if (err) {
@@ -118,11 +168,12 @@ exports.deleteCourse = async function (req, res) {
             // exports.unenrollCourse(req, res, student, STUDENT_STATUS);
             let studentQuery = { email: student.email }
             let studentValues = {
-                $pull: { courseList: {
-                            id_course: req.params.id,
-                            status: STUDENT_STATUS
-                        }
+                $pull: {
+                    courseList: {
+                        id_course: req.params.id,
+                        status: STUDENT_STATUS
                     }
+                }
             };
             acc_db_connect.updateOne(studentQuery, studentValues, {}, function (err, account) {
                 if (err) {

@@ -11,6 +11,8 @@ module.exports = function (app) {
         .get(accountHandler.loginRequired, courseHandler.getCourse);
     app.route('/course/:id/student')
         .get(accountHandler.loginRequired, courseHandler.getStudents);
+    app.route('/course/:id/teacher')
+        .get(accountHandler.loginRequired, courseHandler.getTeachers);
     app.route('/course/:id/delete')
         .post(accountHandler.loginRequired, courseHandler.deleteCourse);
     app.route('/course/:id/unenroll')
