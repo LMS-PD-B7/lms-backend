@@ -52,6 +52,23 @@ exports.getAllCourses = function (req, res) {
     })
 }
 
+exports.unenrollCourse = function (req, res,stat) {
+    let query = { email: student.email }
+    let values = {
+        $pull: { courseList: {
+                    id_course: req.params.id,
+                    status: stat
+                }
+            }
+    };
+    acc_db_connect.updateOne(query, values, {}, function (err, account) {
+        if (err) {
+            return res.status(400).send({ message: err })
+        }
+        return res.status(200).json({ message: 'User Updated' });
+    });
+}
+
 exports.deleteCourse = async function (req, res) {
     if (req.account) {
         let db_connect = courseModel.connectDb();

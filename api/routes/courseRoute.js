@@ -9,4 +9,6 @@ module.exports = function (app) {
         .get(courseHandler.getAllCourses);
     app.route('/course/:id/delete')
         .post(accountHandler.loginRequired, courseHandler.deleteCourse);
+    app.route('/course/:id/unenroll')
+        .post(accountHandler.loginRequired, courseHandler.unenrollCourse);
 }
