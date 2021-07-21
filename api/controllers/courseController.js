@@ -26,6 +26,45 @@ exports.updateCourseListAtAccount = function (req, res, course, status) {
     }
 }
 
+exports.addTeacher = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
+
+    if (course) {
+        
+        let courseQuery = { _id: new ObjectID(req.params.id) };
+        let courseValues = {
+            $set: {
+                teacher: req.body.email
+            }
+        }
+        
+        db_connect.updateOne(courseQuery, courseValues, {}, function (err, account) {
+            if (err) {
+                return res.status(400).send({ message: err })
+            }
+            let acc_db_connect = accountModel.connectDb();
+            let newTeacher = await acc_db_connect.findOne({ email: new ObjectID(req.body.email) })
+            let query = { _id: new ObjectID(req.newTeacher._id) };
+            let values = {
+                // PILIH MAU KIRIM ACCOUNT ATA REQ.ACCOUNT
+                $push: accountModel.updateCourseList(newTeacher, course, TEACHER_STATUS)
+            };
+    
+            acc_db_connect.updateOne(query, values, {}, function (err, account) {
+                if (err) {
+                    return res.status(400).send({ message: err })
+                }
+                return res.status(200).json({ message: 'User Updated' });
+            });
+            // return res.status(200).json({ message: 'User Updated' });
+        });
+    } else {
+        return res.status(401).json({ message: 'Course not found' });
+    }
+}
+
 exports.createCourse = function (req, res) {
     let newCourse = courseModel.createNewCourse(req.body, req.account);
     let db_connect = courseModel.connectDb();
