@@ -235,19 +235,14 @@ exports.unenroll = function (account, course, stat) {
 }
 
 exports.unenrollCourse = async function (req, res) {
-    let db_connect = courseModel.connectDb();
-    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
-
     let acc_db_connect = accountModel.connectDb();
-
-    console.log(req.account);
 
     let query = { email: req.account.email }
     let values = {
         $pull: {
             course_list: {
-                id_course: req.params.id,
-                status: TEACHER_STATUS
+                id_course: new ObjectID(req.params.id),
+                status: STUDENT_STATUS
             }
         }
     };
