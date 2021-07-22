@@ -10,7 +10,12 @@ module.exports = {
             maker_email: new ObjectID(account.email),
             title: attendance.title,
             description: attendance.description,
-            date: new Date(),
+            date: time.getDate()        + "-" + 
+                    time.getMonth()     + "-"  + 
+                    time.getFullYear()  + " " + 
+                    time.getHours()     + ":" + 
+                    time.getMinutes()   + ":" + 
+                    time.getSeconds(),
             late_limit: attendance.late_limit,
             deadline: new Date(),
             submission: []

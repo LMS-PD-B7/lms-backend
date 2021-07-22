@@ -13,6 +13,12 @@ module.exports = {
         return newSubmission;
     },
 
+    updateStatus: function (submission) {
+        return {
+            status:submission.status
+        }
+    },
+
     connectDb: function () {
         let db = dbo.getDb();
 

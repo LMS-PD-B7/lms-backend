@@ -48,6 +48,19 @@ exports.getAllAttendances = function(req, res) {
     })
   }
 
+exports.getAttendance = async function (req, res) {
+    let db_connect = attendanceModel.connectDb();
+
+    let attendance = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
+
+    if (attendance) {
+        res.send(attendance);
+    } else {
+        return res.status(401).json({ message: 'Attendance not found' });
+    }
+}
+
+
 exports.deleteAttendance = async function(req, res) {
   if (req.account) {
     let db_connect = attendanceModel.connectDb();
@@ -88,7 +101,14 @@ exports.updateAttendance = async function(req, res) {
         return res.status(400).send({ message: "Not authorized" });
     }
 
-    const query = { _id: new ObjectID(req.params.id) };
+    let query = { _id: new ObjectID(req.params.id) };
+    let values = {
+      $push: {
+        title: req.body.title,
+        description: req.body.description,
+        deadline: req.body.date
+      }
+  }
 
     db_connect.updateOne(query, values, function (err, attendance) {
       if (err) {
