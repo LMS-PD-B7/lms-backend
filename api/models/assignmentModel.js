@@ -5,11 +5,11 @@ var dbo = require('../../db/connection');
 const assignmentModel = require('./assignmentModel');
 
 module.exports = {
-    createNewAssignment: function (assignment, course) {
+    createNewAssignment: function (assignment, course, account) {
         var time = new Date(); 
         const newAssignment = {
-            id_course: new ObjectID(course),
-            //maker_email: harus pengajar
+            id_course: new ObjectID(course._id),
+            maker_email: "",
             title: assignment.title,
             description: assignment.description,
             date: time.getDate()        + "-" + 
@@ -23,6 +23,7 @@ module.exports = {
             submissions: [],
             comments: []
         }
+        newAssignment.maker_email = account.email;
 
         return newAssignment;
     },
