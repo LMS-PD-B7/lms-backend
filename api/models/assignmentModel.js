@@ -9,11 +9,11 @@ module.exports = {
         var time = new Date(); 
         const newAssignment = {
             id_course: new ObjectID(course),
-            //maker_email: 
+            //maker_email: harus pengajar
             title: assignment.title,
             description: assignment.description,
             date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-"  + 
+                    time.getMonth()     + "-" + 
                     time.getFullYear()  + " " + 
                     time.getHours()     + ":" + 
                     time.getMinutes()   + ":" + 

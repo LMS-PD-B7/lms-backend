@@ -1,10 +1,16 @@
 'use strict';
 
 var discussionModel = require("../models/discussionModel");
+var courseModel = require("../models/courseModel");
+const { ObjectID } = require("mongodb");
 
 module.exports = {
-    createDiscussion : function (req, res) {
-        let newDiscussion = discussionModel.createNewDiscussion(req.body);
+    createDiscussion : async function (req, res) {
+        let course_db_connect = courseModel.connectDb();
+        let course = await course_db_connect.findOne({_id: new ObjectID(req.params.id)});
+        console.log(course);
+        console.log(req.account);
+        let newDiscussion = discussionModel.createNewDiscussion(req.body, course, req.account);
         
         let db_connect = discussionModel.connectDb();
     
