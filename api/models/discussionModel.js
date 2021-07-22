@@ -9,6 +9,7 @@ module.exports = {
         var time = new Date(); 
         const newDiscussion = {
             id_course: new ObjectID(course),
+            //maker_email: 
             title: discussion.title,
             description: discussion.description,
             date: time.getDate()        + "-" + 
