@@ -10,7 +10,7 @@ module.exports = function (app) {
     app.route('/auth/login')
         .post(accountHandler.login);
     app.route('/profile')
-        .get(accountHandler.loginRequired, accountHandler.profile);
+        .get(accountHandler.loginRequired, accountHandler.profile); // LOGIN ULANG DULU
     app.route('/auth/update')
         .put(accountHandler.loginRequired, accountHandler.update);
 
