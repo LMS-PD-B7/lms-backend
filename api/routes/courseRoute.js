@@ -15,6 +15,8 @@ module.exports = function (app) {
     app.route('/course/:id/teacher')
         .get(accountHandler.loginRequired, courseHandler.getTeachers);
 
+    app.route('/course/:id/add/student')
+        .post(accountHandler.loginRequired, courseHandler.addStudent);
     app.route('/course/:id/add/teacher')
         .post(accountHandler.loginRequired, courseHandler.addTeacher);
     app.route('/course/:id/delete')

@@ -26,6 +26,38 @@ exports.updateCourseListAtAccount = function (account, res, course, status) {
     }
 }
 
+exports.addStudent = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
+
+    if (course) {
+        let courseQuery = { _id: new ObjectID(req.params.id) };
+        let courseValues = {
+            $push: {
+                student: req.body.newStudentEmail
+            }
+        }
+
+        db_connect.updateOne(courseQuery, courseValues, {}, async function (err, account) {
+            if (err) {
+                return res.status(400).send({ message: err })
+            }
+            let acc_db_connect = accountModel.connectDb();
+
+            let newStudent = await acc_db_connect.findOne({ email: req.body.newStudentEmail })
+            if (!newStudent) {
+                return res.status(200).json({ message: 'User not found' });
+            } else {
+                return exports.updateCourseListAtAccount(newStudent, res, course, STUDENT_STATUS);
+            }
+        });
+    } else {
+        return res.status(401).json({ message: 'Course not found' });
+    }
+}
+
+
 exports.addTeacher = async function (req, res) {
     let db_connect = courseModel.connectDb();
 
