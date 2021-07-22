@@ -228,7 +228,7 @@ exports.unenroll = function (account, course, stat) {
             return res.status(400).send({ message: err })
         }
         course_db_connect.updateOne(course_query, course_values, {}, function (err, course) {
-            
+
         })
         return res.status(200).json({ message: 'User Updated' });
     });
@@ -246,15 +246,17 @@ exports.unenrollCourse = async function (req, res) {
     let values = {
         $pull: {
             course_list: {
-                id_course: req.params.id,
+                id_course: new ObjectID(req.params.id),
                 status: TEACHER_STATUS
             }
         }
     };
+
     acc_db_connect.updateOne(query, values, {}, function (err, account) {
         if (err) {
             return res.status(400).send({ message: err })
         }
+
         return res.status(200).json({ message: 'User Updated' });
     });
 }
