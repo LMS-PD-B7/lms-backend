@@ -35,7 +35,7 @@ exports.addStudent = async function (req, res) {
         let courseQuery = { _id: new ObjectID(req.params.id) };
         let courseValues = {
             $push: {
-                student: req.body.newStudentEmail
+                student: req.body.email
             }
         }
 
@@ -45,7 +45,7 @@ exports.addStudent = async function (req, res) {
             }
             let acc_db_connect = accountModel.connectDb();
 
-            let newStudent = await acc_db_connect.findOne({ email: req.body.newStudentEmail })
+            let newStudent = await acc_db_connect.findOne({ email: req.body.email })
             if (!newStudent) {
                 return res.status(200).json({ message: 'User not found' });
             } else {
@@ -67,7 +67,7 @@ exports.addTeacher = async function (req, res) {
         let courseQuery = { _id: new ObjectID(req.params.id) };
         let courseValues = {
             $push: {
-                teacher: req.body.newTeacherEmail
+                teacher: req.body.email
             }
         }
 
@@ -77,7 +77,7 @@ exports.addTeacher = async function (req, res) {
             }
             let acc_db_connect = accountModel.connectDb();
 
-            let newTeacher = await acc_db_connect.findOne({ email: req.body.newTeacherEmail })
+            let newTeacher = await acc_db_connect.findOne({ email: req.body.email })
             if (!newTeacher) {
                 return res.status(200).json({ message: 'User not found' });
             } else {
@@ -87,6 +87,23 @@ exports.addTeacher = async function (req, res) {
     } else {
         return res.status(401).json({ message: 'Course not found' });
     }
+}
+
+exports.enroll = async function (req, res) {
+    let db_connect = courseModel.connectDb();
+
+    let course = await db_connect.findOne({ _id: new ObjectID(req.params.id) })
+
+    if (course) {
+        if (course.enrollment_key === req.body.enrollment_key) {
+            return exports.addStudent(req, res);
+        } else {
+            return res.status(401).json({ message: 'Enrollment key invalid' });
+        }
+    } else {
+        return res.status(401).json({ message: 'Course not found' });
+    }
+
 }
 
 exports.createCourse = function (req, res) {

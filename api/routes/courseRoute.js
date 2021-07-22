@@ -19,6 +19,9 @@ module.exports = function (app) {
         .post(accountHandler.loginRequired, courseHandler.addStudent);
     app.route('/course/:id/add/teacher')
         .post(accountHandler.loginRequired, courseHandler.addTeacher);
+    app.route('/course/:id/enroll')
+        .post(accountHandler.loginRequired, courseHandler.enroll);
+
     app.route('/course/:id/delete')
         .post(accountHandler.loginRequired, courseHandler.deleteCourse);
     app.route('/course/:id/unenroll')
