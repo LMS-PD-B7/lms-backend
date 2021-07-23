@@ -118,10 +118,7 @@ exports.createCourse = function (req, res) {
         } else {
             let acc_db_connect = accountModel.connectDb();
             let teacher = await acc_db_connect.findOne({ _id: new ObjectID(req.account._id) })
-
-            console.log(req.account);
-            console.log(teacher);
-            console.log(course.ops[0]);
+            
             return exports.updateCourseListAtAccount(teacher, res, course.ops[0], TEACHER_STATUS);
         }
     });
@@ -201,39 +198,6 @@ exports.getTeachers = async function (req, res) {
     }
 }
 
-exports.unenroll = function (account, course, stat) {
-    let course_db_connect = courseModel.connectDb();
-    let acc_db_connect = accountModel.connectDb();
-
-    let course_query = { _id: new ObjectID(account._id) }
-    let course_values = {
-        $pull: {
-            courseList: {
-                id_course: account._id,
-                status: stat
-            }
-        }
-    };
-    let acc_query = { _id: new ObjectID(account._id) }
-    let acc_values = {
-        $pull: {
-            courseList: {
-                id_course: account._id,
-                status: stat
-            }
-        }
-    };
-    acc_db_connect.updateOne(acc_query, acc_values, {}, function (err, account) {
-        if (err) {
-            return res.status(400).send({ message: err })
-        }
-        course_db_connect.updateOne(course_query, course_values, {}, function (err, course) {
-            
-        })
-        return res.status(200).json({ message: 'User Updated' });
-    });
-}
-
 exports.unenrollCourse = async function (req, res) {
     let acc_db_connect = accountModel.connectDb();
 
@@ -254,6 +218,26 @@ exports.unenrollCourse = async function (req, res) {
     });
 }
 
+exports.unenroll = function (res, account, course, stat) {
+    let acc_db_connect = accountModel.connectDb();
+
+    let query = { email: account.email }
+    let values = {
+        $pull: {
+            course_list: {
+                id_course: new ObjectID(course._id),
+                status: stat
+            }
+        }
+    };
+    acc_db_connect.updateOne(query, values, {}, function (err, account) {
+        if (err) {
+            return res.status(400).send({ message: err })
+        }
+        return res.status(200).json({ message: 'User Updated' });
+    });
+}
+
 exports.deleteCourse = async function (req, res) {
     if (req.account) {
         let db_connect = courseModel.connectDb();
@@ -263,53 +247,26 @@ exports.deleteCourse = async function (req, res) {
         if (!course || course.teacher[0] !== req.account.email) {
             return res.status(400).send({ message: "Not authorized" });
         }
-
-        for (const teacher of course.teacher) {
-            // exports.unenrollCourse(req, res, teacher, TEACHER_STATUS);
-            let teacherQuery = { email: teacher.email }
-            let teacherValues = {
-                $pull: {
-                    courseList: {
-                        id_course: req.params.id,
-                        status: TEACHER_STATUS
-                    }
-                }
-            };
-            acc_db_connect.updateOne(teacherQuery, teacherValues, {}, function (err, account) {
-                if (err) {
-                    return res.status(400).send({ message: err })
-                }
-                return res.status(200).json({ message: 'User Updated' });
-            });
+        
+        let acc_db_connect = accountModel.connectDb();
+        for (const teacherEmail of course.teacher) {
+            let teacher = await acc_db_connect.findOne({ email: teacherEmail });
+            exports.unenroll(res, teacher, course, TEACHER_STATUS);
         }
 
-        for (const student of course.student) {
-            // exports.unenrollCourse(req, res, student, STUDENT_STATUS);
-            let studentQuery = { email: student.email }
-            let studentValues = {
-                $pull: {
-                    courseList: {
-                        id_course: req.params.id,
-                        status: STUDENT_STATUS
-                    }
-                }
-            };
-            acc_db_connect.updateOne(studentQuery, studentValues, {}, function (err, account) {
-                if (err) {
-                    return res.status(400).send({ message: err })
-                }
-                return res.status(200).json({ message: 'User Updated' });
-            });
+        for (const studentEmail of course.student) {
+            let student = await acc_db_connect.findOne({ email: studentEmail });
+            exports.unenroll(res, student, course, STUDENT_STATUS);
         }
 
         const query = { _id: new ObjectID(req.params.id) };
 
-        db_connect.remove(query, 1, function (err, course) {
+        db_connect.remove(query, 1, async function (err, course) {
             if (err) {
                 return res.status(400).send({ message: err });
+            } else {
+                return res.status(200).send({ message: 'Course deleted' });
             }
-
-            return res.status(200).send({ message: 'Course deleted' });
         });
     } else {
         return res.status(401).send({ message: 'Invalid token' });
