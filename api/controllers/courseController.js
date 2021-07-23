@@ -250,30 +250,21 @@ exports.deleteCourse = async function (req, res) {
         
         let acc_db_connect = accountModel.connectDb();
         for (const teacherEmail of course.teacher) {
-            console.log(course.teacher);
-            console.log(teacherEmail);
             let teacher = await acc_db_connect.findOne({ email: teacherEmail });
-            console.log(teacher);
             exports.unenroll(res, teacher, course, TEACHER_STATUS);
         }
-        console.log("Teacher UwU");
 
         for (const studentEmail of course.student) {
-            console.log(course.student);
-            console.log(studentEmail);
             let student = await acc_db_connect.findOne({ email: studentEmail });
-            console.log(student);
             exports.unenroll(res, student, course, STUDENT_STATUS);
         }
 
-        console.log("Student UwU");
         const query = { _id: new ObjectID(req.params.id) };
 
         db_connect.remove(query, 1, async function (err, course) {
             if (err) {
                 return res.status(400).send({ message: err });
             } else {
-                console.log(course);
                 return res.status(200).send({ message: 'Course deleted' });
             }
         });
