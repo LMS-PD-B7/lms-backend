@@ -7,6 +7,6 @@ module.exports = function (app) {
     app.route('/course/:id/discussion')
         .post(accountHandler.loginRequired, discussionHandler.createDiscussion)
         .get(discussionHandler.getAllDiscussion);
-    app.route('/course/:id/discussion/update')
+    app.route('/course/:id/discussion/:id_discussion/update')
         .put(accountHandler.loginRequired, discussionHandler.update);
 }

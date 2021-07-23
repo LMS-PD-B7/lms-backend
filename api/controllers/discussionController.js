@@ -7,11 +7,11 @@ const { ObjectID } = require("mongodb");
 
 exports.updateDiscussionList = async function (req, res, discuss) {
     let course_db_connect = courseModel.connectDb();
-    let course = await course_db_connect.findOne({_id: new ObjectID(req.params.id)});
+    let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
     if (course) {
         let query = { _id: new ObjectID(req.params.id) };
         let values = {
-            $push: {discussions: new ObjectID(discuss._id)}
+            $push: { discussions: new ObjectID(discuss._id) }
         };
 
         course_db_connect.updateOne(query, values, {}, function (err, account) {
@@ -26,13 +26,13 @@ exports.updateDiscussionList = async function (req, res, discuss) {
 }
 
 module.exports = {
-    createDiscussion : async function (req, res) {
+    createDiscussion: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
-        let course = await course_db_connect.findOne({_id: new ObjectID(req.params.id)});
+        let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
         let newDiscussion = discussionModel.createNewDiscussion(req.body, req.account, course);
-        
+
         let db_connect = discussionModel.connectDb();
-    
+
         db_connect.insertOne(newDiscussion, function (err, discussion) {
             if (err) {
                 return res.status(400).send({
@@ -44,13 +44,13 @@ module.exports = {
         });
     },
 
-    getAllDiscussion : function(req, res) {
+    getAllDiscussion: function (req, res) {
         let db_connect = discussionModel.connectDb();
-      
-        db_connect.find({}).toArray(function(err, discussion) {
+
+        db_connect.find({}).toArray(function (err, discussion) {
             if (err) {
                 return res.status(400).send({
-                    message:err
+                    message: err
                 })
             } else {
                 return res.status(200).send(discussion);
@@ -58,10 +58,12 @@ module.exports = {
         })
     },
 
-    update: function (req, res) {
-        if (req.discussion) {
+    update: async function (req, res) {
+        let discuss_db_connect = discussionModel.connectDb();
+        let discussion = await discuss_db_connect.findOne({ _id: new ObjectID(req.params.id_discussion) });
+        if (discussion) {
             let db_connect = discussionModel.connectDb();
-            let query = { _id: new ObjectID(req.discussion._id) };
+            let query = { _id: new ObjectID(req.params.id_discussion) };
             let values = {
                 $set: discussionModel.updateDiscussion(req.body)
             };

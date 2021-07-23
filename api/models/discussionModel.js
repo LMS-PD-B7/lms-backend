@@ -25,9 +25,9 @@ module.exports = {
         return newDiscussion;
     },
 
-    updateDiscussion: function (discussion, course) {
+    updateDiscussion: function (discussion) {
+        var time = new Date();
         return {
-            id_course: discussion.id_course,
             title: discussion.title,
             description: discussion.description,
             date: time.getDate()        + "-" + 
