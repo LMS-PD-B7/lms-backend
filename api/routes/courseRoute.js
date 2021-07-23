@@ -25,5 +25,5 @@ module.exports = function (app) {
     app.route('/course/:id/delete')
         .post(accountHandler.loginRequired, courseHandler.deleteCourse);
     app.route('/course/:id/unenroll')
-        .post(accountHandler.loginRequired, courseHandler.unenrollCourse);
+        .put(accountHandler.loginRequired, courseHandler.unenrollCourse);
 }
