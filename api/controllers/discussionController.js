@@ -4,13 +4,32 @@ var discussionModel = require("../models/discussionModel");
 var courseModel = require("../models/courseModel");
 const { ObjectID } = require("mongodb");
 
+
+exports.updateDiscussionList = async function (req, res, discuss) {
+    let course_db_connect = courseModel.connectDb();
+    let course = await course_db_connect.findOne({_id: new ObjectID(req.params.id)});
+    if (course) {
+        let query = { _id: new ObjectID(req.params.id) };
+        let values = {
+            $push: {discussions: new ObjectID(discuss._id)}
+        };
+
+        course_db_connect.updateOne(query, values, {}, function (err, account) {
+            if (err) {
+                return res.status(400).send({ message: err })
+            }
+            return res.status(200).json({ message: "Discussion list Updated" });
+        });
+    } else {
+        return res.status(401).send({ message: 'Invalid token' });
+    }
+}
+
 module.exports = {
     createDiscussion : async function (req, res) {
         let course_db_connect = courseModel.connectDb();
         let course = await course_db_connect.findOne({_id: new ObjectID(req.params.id)});
-        console.log(course);
-        console.log(req.account);
-        let newDiscussion = discussionModel.createNewDiscussion(req.body, course, req.account);
+        let newDiscussion = discussionModel.createNewDiscussion(req.body, req.account, course);
         
         let db_connect = discussionModel.connectDb();
     
@@ -20,9 +39,7 @@ module.exports = {
                     message: err
                 })
             } else {
-                return res.status(200).send({
-                    message: "Discussion created successfully"
-                });
+                return exports.updateDiscussionList(req, res, discussion.ops[0]);
             }
         });
     },
@@ -60,35 +77,3 @@ module.exports = {
         }
     }
 }
-
-// exports.createDiscussion = function (req, res) {
-//     let newDiscussion = discussionModel.createNewDiscussion(req.body);
-    
-//     let db_connect = discussionModel.connectDb();
-
-//     db_connect.insertOne(newDiscussion, function (err, post) {
-//         if (err) {
-//             return res.status(400).send({
-//                 message: err
-//             })
-//         } else {
-//             return res.status(200).send({
-//                 message: "Discussion created successfully"
-//             });
-//         }
-//     });
-// }
-
-// exports.getAllDiscussion = function(req, res) {
-//     let db_connect = discussionModel.connectDb();
-  
-//     db_connect.find({}).toArray(function(err, discussion) {
-//         if (err) {
-//             return res.status(400).send({
-//                 message:err
-//             })
-//         } else {
-//             return res.status(200).send(discussion);
-//         }
-//     })
-// }
