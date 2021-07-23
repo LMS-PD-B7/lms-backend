@@ -218,14 +218,14 @@ exports.unenrollCourse = async function (req, res) {
     });
 }
 
-exports.unenroll = function (account, course, stat) {
+exports.unenroll = function (res, account, course, stat) {
     let acc_db_connect = accountModel.connectDb();
 
-    let query = { email: req.account.email }
+    let query = { email: account.email }
     let values = {
         $pull: {
             course_list: {
-                id_course: new ObjectID(req.params.id),
+                id_course: new ObjectID(course._id),
                 status: stat
             }
         }
@@ -247,26 +247,33 @@ exports.deleteCourse = async function (req, res) {
         if (!course || course.teacher[0] !== req.account.email) {
             return res.status(400).send({ message: "Not authorized" });
         }
+        
+        let acc_db_connect = accountModel.connectDb();
+        for (const teacherEmail of course.teacher) {
+            console.log(course.teacher);
+            console.log(teacherEmail);
+            let teacher = await acc_db_connect.findOne({ email: teacherEmail });
+            console.log(teacher);
+            exports.unenroll(res, teacher, course, TEACHER_STATUS);
+        }
+        console.log("Teacher UwU");
 
+        for (const studentEmail of course.student) {
+            console.log(course.student);
+            console.log(studentEmail);
+            let student = await acc_db_connect.findOne({ email: studentEmail });
+            console.log(student);
+            exports.unenroll(res, student, course, STUDENT_STATUS);
+        }
+
+        console.log("Student UwU");
         const query = { _id: new ObjectID(req.params.id) };
 
         db_connect.remove(query, 1, async function (err, course) {
             if (err) {
                 return res.status(400).send({ message: err });
             } else {
-                // let acc_db_connect = accountModel.connectDb();
-                // for (const teacherEmail of course.teacher) {
-                //     console.log(teacherEmail);
-                //     let teacher = await acc_db_connect.findOne({email: teacherEmail});
-                //     console.log(teacher);
-                //     return exports.unenroll(teacher, course, TEACHER_STATUS);
-                // }
-                // for (const studentEmail of course.teacher) {
-                //     console.log(studentEmail);
-                //     let student = await acc_db_connect.findOne({email: studentEmail});
-                //     console.log(student);
-                //     return exports.unenroll(student, course, STUDENT_STATUS);
-                // }
+                console.log(course);
                 return res.status(200).send({ message: 'Course deleted' });
             }
         });
