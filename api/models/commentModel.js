@@ -3,11 +3,12 @@
 var dbo = require('../../db/connection');
 
 module.exports = {
-    createNewCommentDiscussion: function (comment, account) {
+    createNewComment: function (comment, account) {
         let newComment = {
-            email: account.email,
-            date:new Date(),
-            content: comment.content
+            maker_email: account.email,
+            date: new Date(),
+            content: comment.content,
+            replyTo: comment.id_post
         }
 
         return newComment;
