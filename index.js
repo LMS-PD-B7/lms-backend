@@ -39,6 +39,7 @@ app.use(function (req, res, next) {
 require("./api/routes/accountRoute")(app);
 require("./api/routes/assignmentRoute")(app);
 require("./api/routes/courseRoute")(app);
+require("./api/routes/commentRoute")(app);
 require("./api/routes/discussionRoute")(app);
 
 app.get('/', (req, res) => {

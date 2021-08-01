@@ -1,41 +1,80 @@
 'use strict';
 
-const commentModel = require("../models/commentModel");
+// const commentModel = require("../models/commentModel");
 var commentModel = require("../models/commentModel"),
+    accountModel = require("../models/accountModel"),
     discussionModel = require("../models/discussionModel"),
-    accountModel = require("../models/accountdiscussionModel"),
+    assignmentModel = require("../models/assignmentModel"),
     { ObjectID } = require('mongodb');;
 
-// exports.updateCommentsDiscussion = function (req, res, comment) {
-//     if (req.course) {
-//         let acc_db_connect = discussionModel.connectDb();
-//         let query = { _id: new ObjectID(req.account._id) };
-//         let values = {
-//             $push: discussionModel.updateCourseList(req.discussion, course.ops[0], status)
-//         };
 
-//         acc_db_connect.updateOne(query, values, {}, function (err, account) {
-//             if (err) {
-//                 return res.status(400).send({ message: err })
-//             }
-//             return res.status(200).json({ message: 'User Updated' });
-//         });
-//     } else {
-//         return res.status(401).send({ message: 'Invalid token' });
-//     }
-// }
+exports.createComment = async function (req, res) {
+    let discussion_db_connect = discussionModel.connectDb();
+    let discussion = await discussion_db_connect.findOne({ _id: new ObjectID(req.body.id_post) });
 
-// exports.createCommentDiscussion = function (req, res) {
-//     let newComment = commentModel.createNewCommentDiscussion(req.body, req.account);
-//     let db_connect = commentModel.connectDb();
+    let assignment_db_connect = assignmentModel.connectDb();
+    let assignment = await assignment_db_connect.findOne({ _id: new ObjectID(req.body.id_post) });
 
-//     db_connect.insertOne(newComment, function (err, comment) {
-//         if (err) {
-//             return res.status(400).send({
-//                 message: err
-//             })
-//         } else {
-//             return exports.updateCommentsDiscussion(req, res, comment);
-//         }
-//     });
-// }
+    if (discussion || assignment) {
+        let newComment = commentModel.createNewComment(req.body, req.account);
+        let db_connect = commentModel.connectDb();
+
+        db_connect.insertOne(newComment, function (err, comment) {
+            if (err) {
+                return res.status(400).send({
+                    message: err
+                })
+            } else {
+                return res.status(200).send({
+                    message: "Comment created successfully"
+
+                });
+            }
+        });
+    } else {
+        return res.status(400).send({
+            message: "Discussion or Assignment not found."
+        })
+    }
+}
+
+exports.getAllComment = function (req, res) {
+    let db_connect = commentModel.connectDb();
+
+    db_connect.find({}).toArray(function (err, comment) {
+        if (err) {
+            return res.status(400).send({
+                message: err
+            })
+        } else {
+            return res.status(200).send(comment);
+        }
+    })
+}
+
+exports.deleteComment = async function (req, res) {
+    let db_connect = commentModel.connectDb();
+    let comment = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
+
+    console.log(req.account.email);
+    console.log(comment.maker_email);
+
+    if (req.account) {
+        if (req.account.email !== comment.maker_email) {
+            return res.status(400).send({ message: "Not authorized" });
+        }
+
+        const query = { _id: new ObjectID(req.params.id) };
+
+        db_connect.remove(query, 1, async function (err, comment) {
+            if (err) {
+                return res.status(400).send({ message: err });
+            } else {
+                return res.status(200).send({ message: 'Comment deleted' });
+            }
+        });
+    } else {
+        return res.status(401).send({ message: 'Invalid token' });
+    }
+
+}
