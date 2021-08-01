@@ -118,7 +118,7 @@ exports.createCourse = function (req, res) {
         } else {
             let acc_db_connect = accountModel.connectDb();
             let teacher = await acc_db_connect.findOne({ _id: new ObjectID(req.account._id) })
-            
+
             return exports.updateCourseListAtAccount(teacher, res, course.ops[0], TEACHER_STATUS);
         }
     });
@@ -247,7 +247,7 @@ exports.deleteCourse = async function (req, res) {
         if (!course || course.teacher[0] !== req.account.email) {
             return res.status(400).send({ message: "Not authorized" });
         }
-        
+
         let acc_db_connect = accountModel.connectDb();
         for (const teacherEmail of course.teacher) {
             let teacher = await acc_db_connect.findOne({ email: teacherEmail });
@@ -271,5 +271,4 @@ exports.deleteCourse = async function (req, res) {
     } else {
         return res.status(401).send({ message: 'Invalid token' });
     }
-
 }
