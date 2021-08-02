@@ -42,6 +42,22 @@ module.exports = {
         }
     },
 
+    updateSubmissions: function (account, submissions, stat) {
+        return {
+            submissions: {
+                email: account.email,
+                attachment: submissions.attachment,
+                date: time.getDate()        + "-" + 
+                        time.getMonth()     + "-" + 
+                        time.getFullYear()  + " " + 
+                        time.getHours()     + ":" + 
+                        time.getMinutes()   + ":" + 
+                        time.getSeconds(),
+                grade: 0
+            }
+        }
+    },
+
     connectDb: function () {
         let db = dbo.getDb();
 
