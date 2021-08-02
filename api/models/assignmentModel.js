@@ -2,28 +2,25 @@
 
 const { ObjectID } = require('mongodb');
 var dbo = require('../../db/connection');
-const assignmentModel = require('./assignmentModel');
 
 module.exports = {
     createNewAssignment: function (assignment, course, account) {
-        var time = new Date(); 
+        var time = new Date();
         const newAssignment = {
             id_course: new ObjectID(course._id),
-            maker_email: "",
+            maker_email: account.email,
             title: assignment.title,
             description: assignment.description,
-            date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-" + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
-            deadline:new Date(),
+            date: time.getDate()    + "-" +
+                (time.getMonth()+1) + "-" +
+                time.getFullYear()  + " " +
+                time.getHours()     + ":" +
+                time.getMinutes()   + ":" +
+                time.getSeconds(),
+            deadline: new Date(assignment.deadline),
             attachment: assignment.attachment,
-            submissions: [],
-            comments: []
+            submissions: []
         }
-        newAssignment.maker_email = account.email;
 
         return newAssignment;
     },
@@ -54,5 +51,4 @@ module.exports = {
 
         return db.collection('assignment');
     }
-
 }
