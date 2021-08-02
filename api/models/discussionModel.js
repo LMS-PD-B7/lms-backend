@@ -12,12 +12,12 @@ module.exports = {
             maker_email: account.email,
             title: discussion.title,
             content: discussion.content,
-            date: time.getDate()        + "-" + 
-                    (time.getMonth()+1) + "-" + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
+            date: time.getDate()    + "-" +
+                (time.getMonth()+1) + "-" +
+                time.getFullYear()  + " " +
+                time.getHours()     + ":" +
+                time.getMinutes()   + ":" +
+                time.getSeconds(),
             attachment: discussion.attachment,
             comments: []
         }
@@ -30,12 +30,12 @@ module.exports = {
         return {
             title: discussion.title,
             description: discussion.description,
-            date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-" + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
+            date: time.getDate() + "-" +
+                time.getMonth() + "-" +
+                time.getFullYear() + " " +
+                time.getHours() + ":" +
+                time.getMinutes() + ":" +
+                time.getSeconds(),
             attachment: discussion.attachment,
             comments: discussion.comments
         }

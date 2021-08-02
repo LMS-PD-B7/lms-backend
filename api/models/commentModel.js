@@ -6,12 +6,12 @@ module.exports = {
     createNewComment: function (comment, account) {
         let newComment = {
             maker_email: account.email,
-            date: time.getDate()        + "-" + 
-                    (time.getMonth()+1) + "-" + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
+            date: time.getDate()    + "-" +
+                (time.getMonth()+1) + "-" +
+                time.getFullYear()  + " " +
+                time.getHours()     + ":" +
+                time.getMinutes()   + ":" +
+                time.getSeconds(),
             content: comment.content,
             replyTo: comment.id_post
         }
