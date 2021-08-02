@@ -9,6 +9,6 @@ module.exports = function (app) {
         .get(discussionHandler.getAllDiscussion);
     app.route('/course/:id/discussion/:id_discussion/update')
         .put(accountHandler.loginRequired, discussionHandler.update);
-    // app.route('/course/:id/discussion/:id_discussion/delete')
-    //     .put(accountHandler.loginRequired, discussionHandler.deleteDiscussion);
+    app.route('/course/:id/discussion/:id_discussion/delete')
+        .delete(accountHandler.loginRequired, discussionHandler.deleteDiscussion);
 }
