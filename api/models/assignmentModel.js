@@ -28,6 +28,23 @@ module.exports = {
         return newAssignment;
     },
 
+    updateAssignment: function (assignment) {
+        var time = new Date();
+        return {
+            title: assignment.title,
+            description: assignment.description,
+            date: time.getDate()        + "-" + 
+                    time.getMonth()     + "-" + 
+                    time.getFullYear()  + " " + 
+                    time.getHours()     + ":" + 
+                    time.getMinutes()   + ":" + 
+                    time.getSeconds(),
+            deadline:new Date(),
+            attachment: assignment.attachment,
+            comments: assignment.comments
+        }
+    },
+
     connectDb: function () {
         let db = dbo.getDb();
 
