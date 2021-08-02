@@ -1,11 +1,14 @@
 'use strict';
 
 module.exports = function (app) {
-    let discussionHandler = require("../controllers/discussionController");
+    let discussionHandler = require("../controllers/discussionController"),
+    accountHandler = require("../controllers/accountController");
 
-    app.route('/discussion')
-        .post(discussionHandler.createDiscussion)
+    app.route('/course/:id/discussion')
+        .post(accountHandler.loginRequired, discussionHandler.createDiscussion)
         .get(discussionHandler.getAllDiscussion);
-    app.route('/discussion/update')
-        .put(discussionHandler.update);
+    app.route('/course/:id/discussion/:id_discussion/update')
+        .put(accountHandler.loginRequired, discussionHandler.update);
+    // app.route('/course/:id/discussion/:id_discussion/delete')
+    //     .put(accountHandler.loginRequired, discussionHandler.deleteDiscussion);
 }

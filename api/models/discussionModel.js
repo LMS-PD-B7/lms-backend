@@ -5,12 +5,19 @@ var dbo = require('../../db/connection');
 const discussionModel = require('./discussionModel');
 
 module.exports = {
-    createNewDiscussion: function (discussion, course) {
+    createNewDiscussion: function (discussion, account, course) {
+        var time = new Date();
         const newDiscussion = {
-            id_course: new ObjectID(course),
+            id_course: new ObjectID(course._id),
+            maker_email: account.email,
             title: discussion.title,
-            description: discussion.description,
-            date: new Date(),
+            content: discussion.content,
+            date: time.getDate()        + "-" + 
+                    time.getMonth()     + "-" + 
+                    time.getFullYear()  + " " + 
+                    time.getHours()     + ":" + 
+                    time.getMinutes()   + ":" + 
+                    time.getSeconds(),
             attachment: discussion.attachment,
             comments: []
         }
@@ -18,12 +25,17 @@ module.exports = {
         return newDiscussion;
     },
 
-    updateDiscussion: function (discussion, course) {
+    updateDiscussion: function (discussion) {
+        var time = new Date();
         return {
-            id_course: discussion.id_course,
             title: discussion.title,
             description: discussion.description,
-            date: new Date(),
+            date: time.getDate()        + "-" + 
+                    time.getMonth()     + "-" + 
+                    time.getFullYear()  + " " + 
+                    time.getHours()     + ":" + 
+                    time.getMinutes()   + ":" + 
+                    time.getSeconds(),
             attachment: discussion.attachment,
             comments: discussion.comments
         }
