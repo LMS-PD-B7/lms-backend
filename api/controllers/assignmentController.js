@@ -61,7 +61,7 @@ module.exports = {
     getAssignmentinCourse: function (req, res) {
         let db_connect = assignmentModel.connectDb();
         const query = {
-            id_course : req.params.id_course
+            id_course : new ObjectID(req.params.id)
         }
         db_connect.find(query).toArray(function (err, assignment) {
             if (err) {
