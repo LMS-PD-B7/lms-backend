@@ -63,6 +63,20 @@ module.exports = {
             }
         })
     },
+    
+    getTodoList : function(req, res) {
+        let db_connect = assignmentModel.connectDb();
+      
+        db_connect.find({"submissions":null}).toArray(function(err, assignment) {
+            if (err) {
+                return res.status(400).send({
+                    message:err
+                })
+            } else {
+                return res.status(200).send(assignment);
+            }
+        })
+    },
 
     update: async function (req, res) {
         let assignment_db_connect = assignmentModel.connectDb();
