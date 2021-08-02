@@ -9,21 +9,19 @@ module.exports = {
         var time = new Date(); 
         const newAssignment = {
             id_course: new ObjectID(course._id),
-            maker_email: "",
+            maker_email: account.email,
             title: assignment.title,
             description: assignment.description,
             date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-" + 
+                    (time.getMonth()+1) + "-" + 
                     time.getFullYear()  + " " + 
                     time.getHours()     + ":" + 
                     time.getMinutes()   + ":" + 
                     time.getSeconds(),
-            deadline:new Date(),
+            deadline: new Date(assignment.deadline),
             attachment: assignment.attachment,
-            submissions: [],
-            comments: []
+            submissions: []
         }
-        newAssignment.maker_email = account.email;
 
         return newAssignment;
     },

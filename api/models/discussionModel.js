@@ -13,7 +13,7 @@ module.exports = {
             title: discussion.title,
             content: discussion.content,
             date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-" + 
+                    (time.getMonth()+1) + "-" + 
                     time.getFullYear()  + " " + 
                     time.getHours()     + ":" + 
                     time.getMinutes()   + ":" + 
