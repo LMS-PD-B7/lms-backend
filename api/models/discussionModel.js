@@ -18,8 +18,7 @@ module.exports = {
                 time.getHours()     + ":" +
                 time.getMinutes()   + ":" +
                 time.getSeconds(),
-            attachment: discussion.attachment,
-            comments: []
+            attachment: discussion.attachment
         }
 
         return newDiscussion;

@@ -41,7 +41,8 @@ module.exports = {
                     message: err
                 })
             } else {
-                return exports.updateAssignmentList(req, res, assignment.ops[0]);
+                return res.status(200).json({ message: 'Assignment created successfully' });
+                // return exports.updateAssignmentList(req, res, assignment.ops[0]);
             }
         });
     },
