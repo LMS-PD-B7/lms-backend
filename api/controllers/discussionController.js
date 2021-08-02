@@ -25,27 +25,6 @@ exports.updateDiscussionList = async function (req, res, discuss) {
     }
 }
 
-exports.deleteDiscussion = async function (req, res) {
-    let db_connect = discussionModel.connectDb();
-    let discussion = await db_connect.findOne({ _id: new ObjectID(req.params.id) });
-    if (discussion) {
-        if (req.account.email === discussion.maker_email) {
-            const query = { _id: new ObjectID(req.params.id) };
-            db_connect.remove(query, 1, async function (err, discussion) {
-                if (err) {
-                    return res.status(400).send({ message: err });
-                } else {
-                    return res.status(200).send({ message: 'Discussion deleted' });
-                }
-            });
-        } else {
-            return res.status(200).send({ message: 'Not authorized' });
-        }
-    } else {
-        return res.status(401).send({ message: 'Discussion not found' });
-    }
-}
-
 module.exports = {
     createDiscussion: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
@@ -79,6 +58,22 @@ module.exports = {
         })
     },
 
+    getDiscussionInCourse: function (req, res) {
+        let db_connect = discussionModel.connectDb();
+        const query = {
+            id_course: new ObjectID(req.params.id)
+        }
+        db_connect.find(query).toArray(function (err, discussion) {
+            if (err) {
+                return res.status(400).send({
+                    message: err
+                })
+            } else {
+                return res.status(200).send(discussion);
+            }
+        })
+    },
+
     update: async function (req, res) {
         let discuss_db_connect = discussionModel.connectDb();
         let discussion = await discuss_db_connect.findOne({ _id: new ObjectID(req.params.id_discussion) });
@@ -97,6 +92,27 @@ module.exports = {
             });
         } else {
             return res.status(401).send({ message: 'Invalid token' });
+        }
+    },
+
+    deleteDiscussion: async function (req, res) {
+        let db_connect = discussionModel.connectDb();
+        let discussion = await db_connect.findOne({ _id: new ObjectID(req.params.id_discussion) });
+        if (discussion) {
+            if (req.account.email === discussion.maker_email) {
+                const query = { _id: new ObjectID(req.params.id) };
+                db_connect.remove(query, 1, function (err, discussion) {
+                    if (err) {
+                        return res.status(400).send({ message: err });
+                    } else {
+                        return res.status(200).send({ message: 'Discussion deleted' });
+                    }
+                });
+            } else {
+                return res.status(200).send({ message: 'Not authorized' });
+            }
+        } else {
+            return res.status(401).send({ message: 'Discussion not found' });
         }
     }
 }

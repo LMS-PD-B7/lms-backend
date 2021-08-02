@@ -4,6 +4,7 @@ var dbo = require('../../db/connection');
 
 module.exports = {
     createNewComment: function (comment, account) {
+        let time = new Date();
         let newComment = {
             maker_email: account.email,
             date: time.getDate()    + "-" +
@@ -13,7 +14,7 @@ module.exports = {
                 time.getMinutes()   + ":" +
                 time.getSeconds(),
             content: comment.content,
-            replyTo: comment.id_post
+            replyTo: comment.replyTo
         }
 
         return newComment;

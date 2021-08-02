@@ -1,6 +1,5 @@
 'use strict';
 
-// const commentModel = require("../models/commentModel");
 var commentModel = require("../models/commentModel"),
     accountModel = require("../models/accountModel"),
     discussionModel = require("../models/discussionModel"),
@@ -10,10 +9,10 @@ var commentModel = require("../models/commentModel"),
 
 exports.createComment = async function (req, res) {
     let discussion_db_connect = discussionModel.connectDb();
-    let discussion = await discussion_db_connect.findOne({ _id: new ObjectID(req.body.id_post) });
+    let discussion = await discussion_db_connect.findOne({ _id: new ObjectID(req.body.replyTo) });
 
     let assignment_db_connect = assignmentModel.connectDb();
-    let assignment = await assignment_db_connect.findOne({ _id: new ObjectID(req.body.id_post) });
+    let assignment = await assignment_db_connect.findOne({ _id: new ObjectID(req.body.replyTo) });
 
     if (discussion || assignment) {
         let newComment = commentModel.createNewComment(req.body, req.account);
@@ -27,7 +26,6 @@ exports.createComment = async function (req, res) {
             } else {
                 return res.status(200).send({
                     message: "Comment created successfully"
-
                 });
             }
         });
@@ -47,6 +45,24 @@ exports.getAllComment = function (req, res) {
                 message: err
             })
         } else {
+            return res.status(200).send(comment);
+        }
+    })
+}
+
+exports.getComment = function (req, res) {
+    let db_connect = commentModel.connectDb();
+    const query = {
+        replyTo: req.params.id_post
+    }
+    console.log(query);
+    db_connect.find(query).toArray(function (err, comment) {
+        if (err) {
+            return res.status(400).send({
+                message: err
+            })
+        } else {
+            console.log(comment);
             return res.status(200).send(comment);
         }
     })

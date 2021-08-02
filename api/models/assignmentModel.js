@@ -37,8 +37,8 @@ module.exports = {
                     time.getMinutes()   + ":" + 
                     time.getSeconds(),
             deadline:new Date(),
-            attachment: assignment.attachment,
-            comments: assignment.comments
+            attachment: assignment.attachment//,
+            // comments: assignment.comments
         }
     },
 
