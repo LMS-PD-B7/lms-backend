@@ -9,10 +9,7 @@ module.exports = {
             description: course.description,
             enrollment_key: course.enrollment_key,
             teacher: [],
-            student: [],
-            assignments: [],
-            attendances: [],
-            discussions: []
+            student: []
         }
         newCourse.teacher.push(account.email);
 

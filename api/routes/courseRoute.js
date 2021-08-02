@@ -23,7 +23,7 @@ module.exports = function (app) {
         .post(accountHandler.loginRequired, courseHandler.enroll);
 
     app.route('/course/:id/delete')
-        .post(accountHandler.loginRequired, courseHandler.deleteCourse);
+        .delete(accountHandler.loginRequired, courseHandler.deleteCourse);
     app.route('/course/:id/unenroll')
-        .post(accountHandler.loginRequired, courseHandler.unenrollCourse);
+        .put(accountHandler.loginRequired, courseHandler.unenrollCourse);
 }

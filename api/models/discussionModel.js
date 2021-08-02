@@ -5,37 +5,36 @@ var dbo = require('../../db/connection');
 const discussionModel = require('./discussionModel');
 
 module.exports = {
-    createNewDiscussion: function (discussion, course) {
-        var time = new Date(); 
+    createNewDiscussion: function (discussion, account, course) {
+        var time = new Date();
         const newDiscussion = {
-            id_course: new ObjectID(course),
-            //maker_email: 
+            id_course: new ObjectID(course._id),
+            maker_email: account.email,
             title: discussion.title,
-            description: discussion.description,
-            date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-"  + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
-            attachment: discussion.attachment,
-            comments: []
+            content: discussion.content,
+            date: time.getDate()    + "-" +
+                (time.getMonth()+1) + "-" +
+                time.getFullYear()  + " " +
+                time.getHours()     + ":" +
+                time.getMinutes()   + ":" +
+                time.getSeconds(),
+            attachment: discussion.attachment
         }
 
         return newDiscussion;
     },
 
-    updateDiscussion: function (discussion, course) {
+    updateDiscussion: function (discussion) {
+        var time = new Date();
         return {
-            id_course: discussion.id_course,
             title: discussion.title,
             description: discussion.description,
-            date: time.getDate()        + "-" + 
-                    time.getMonth()     + "-"  + 
-                    time.getFullYear()  + " " + 
-                    time.getHours()     + ":" + 
-                    time.getMinutes()   + ":" + 
-                    time.getSeconds(),
+            date: time.getDate() + "-" +
+                time.getMonth() + "-" +
+                time.getFullYear() + " " +
+                time.getHours() + ":" +
+                time.getMinutes() + ":" +
+                time.getSeconds(),
             attachment: discussion.attachment,
             comments: discussion.comments
         }
