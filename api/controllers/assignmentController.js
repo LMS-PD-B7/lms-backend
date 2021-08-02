@@ -29,8 +29,6 @@ module.exports = {
     createAssignment: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
         let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
-        console.log(course);
-        console.log(req.account);
         let newAssignment = assignmentModel.createNewAssignment(req.body, course, req.account);
 
         let db_connect = assignmentModel.connectDb();
@@ -42,7 +40,6 @@ module.exports = {
                 })
             } else {
                 return res.status(200).json({ message: 'Assignment created successfully' });
-                // return exports.updateAssignmentList(req, res, assignment.ops[0]);
             }
         });
     },
@@ -60,14 +57,36 @@ module.exports = {
             }
         })
     },
-    
-    getTodoList : function(req, res) {
+
+    getAssignmentinCourse: function (req, res) {
         let db_connect = assignmentModel.connectDb();
-      
-        db_connect.find({"submissions":null}).toArray(function(err, assignment) {
+        const query = {
+            id_course : new ObjectID(req.params.id)
+        }
+        db_connect.find(query).toArray(function (err, assignment) {
             if (err) {
                 return res.status(400).send({
-                    message:err
+                    message: err
+                })
+            } else {
+                return res.status(200).send(assignment);
+            }
+        })
+    },
+
+    getTodoList: function (req, res) {
+        let db_connect = assignmentModel.connectDb();
+        let query = {
+            submissions: {
+                $not: {
+                    email: req.account.email
+                }
+            }
+        };
+        db_connect.findOne(query).toArray(function (err, assignment) {
+            if (err) {
+                return res.status(400).send({
+                    message: err
                 })
             } else {
                 return res.status(200).send(assignment);
@@ -93,6 +112,27 @@ module.exports = {
             });
         } else {
             return res.status(401).send({ message: 'Invalid token' });
+        }
+    },
+
+    deleteAssignment: async function (req, res) {
+        let db_connect = assignmentModel.connectDb();
+        let assignment = await db_connect.findOne({ _id: new ObjectID(req.params.id_assignment) });
+        if (assignment) {
+            if (req.account.email === assignment.maker_email) {
+                const query = { _id: new ObjectID(req.params.id) };
+                db_connect.remove(query, 1, function (err, assignment) {
+                    if (err) {
+                        return res.status(400).send({ message: err });
+                    } else {
+                        return res.status(200).send({ message: 'Assignment deleted' });
+                    }
+                });
+            } else {
+                return res.status(200).send({ message: 'Not authorized' });
+            }
+        } else {
+            return res.status(401).send({ message: 'Assignment not found' });
         }
     }
 }
