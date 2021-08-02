@@ -28,7 +28,9 @@ exports.updateAssignmentList = async function (req, res, assignment) {
 module.exports = {
     createAssignment: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
-        let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
+        let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id_course) });
+        console.log(course);
+
         if (course) {
             if (course.teacher.includes(req.account.email)) {
                 let newAssignment = assignmentModel.createNewAssignment(req.body, course, req.account);
@@ -70,7 +72,7 @@ module.exports = {
     getAssignmentinCourse: function (req, res) {
         let db_connect = assignmentModel.connectDb();
         const query = {
-            id_course: new ObjectID(req.params.id)
+            id_course: new ObjectID(req.params.id_course)
         }
         db_connect.find(query).toArray(function (err, assignment) {
             if (err) {
