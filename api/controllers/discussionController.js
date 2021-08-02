@@ -61,7 +61,6 @@ module.exports = {
                 })
             } else {
                 return res.status(200).json({ message: 'Discussion created successfully' });
-                // return exports.updateDiscussionList(req, res, discussion.ops[0]);
             }
         });
     },
