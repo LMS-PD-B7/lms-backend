@@ -29,19 +29,28 @@ module.exports = {
     createDiscussion: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
         let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
-        let newDiscussion = discussionModel.createNewDiscussion(req.body, req.account, course);
+        if (course) {
+            if (course.teacher.includes(req.account.email)) {
+                let newDiscussion = discussionModel.createNewDiscussion(req.body, req.account, course);
 
-        let db_connect = discussionModel.connectDb();
+                let db_connect = discussionModel.connectDb();
 
-        db_connect.insertOne(newDiscussion, function (err, discussion) {
-            if (err) {
-                return res.status(400).send({
-                    message: err
-                })
+                db_connect.insertOne(newDiscussion, function (err, discussion) {
+                    if (err) {
+                        return res.status(400).send({
+                            message: err
+                        })
+                    } else {
+                        return res.status(200).json({ message: 'Discussion created successfully' });
+                    }
+                });
             } else {
-                return res.status(200).json({ message: 'Discussion created successfully' });
+                return res.status(200).json({ message: 'Not authorized!' });
             }
-        });
+
+        } else {
+            return res.status(200).json({ message: 'Course not found' });
+        }
     },
 
     getAllDiscussion: function (req, res) {
@@ -78,18 +87,22 @@ module.exports = {
         let discuss_db_connect = discussionModel.connectDb();
         let discussion = await discuss_db_connect.findOne({ _id: new ObjectID(req.params.id_discussion) });
         if (discussion) {
-            let db_connect = discussionModel.connectDb();
-            let query = { _id: new ObjectID(req.params.id_discussion) };
-            let values = {
-                $set: discussionModel.updateDiscussion(req.body)
-            };
+            if (req.account.email === discussion.maker_email) {
+                let db_connect = discussionModel.connectDb();
+                let query = { _id: new ObjectID(req.params.id_discussion) };
+                let values = {
+                    $set: discussionModel.updateDiscussion(req.body)
+                };
 
-            db_connect.updateOne(query, values, function (err, discussion) {
-                if (err) {
-                    return res.status(400).send({ message: err })
-                }
-                return res.status(200).json({ message: 'Discussion Updated' });
-            });
+                db_connect.updateOne(query, values, function (err, discussion) {
+                    if (err) {
+                        return res.status(400).send({ message: err })
+                    }
+                    return res.status(200).json({ message: 'Discussion Updated' });
+                });
+            } else {
+                return res.status(200).send({ message: 'Not authorized' });
+            }
         } else {
             return res.status(401).send({ message: 'Invalid token' });
         }

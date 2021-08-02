@@ -107,18 +107,22 @@ module.exports = {
         let assignment_db_connect = assignmentModel.connectDb();
         let assignment = await assignment_db_connect.findOne({ _id: new ObjectID(req.params.id_assignment) });
         if (assignment) {
-            let db_connect = assignmentModel.connectDb();
-            let query = { _id: new ObjectID(req.params.id_assignment) };
-            let values = {
-                $set: assignmentModel.updateAssignment(req.body)
-            };
+            if (req.account.email === assignment.maker_email) {
+                let db_connect = assignmentModel.connectDb();
+                let query = { _id: new ObjectID(req.params.id_assignment) };
+                let values = {
+                    $set: assignmentModel.updateAssignment(req.body)
+                };
 
-            db_connect.updateOne(query, values, function (err, assignment) {
-                if (err) {
-                    return res.status(400).send({ message: err })
-                }
-                return res.status(200).json({ message: 'Assignment Updated' });
-            });
+                db_connect.updateOne(query, values, function (err, assignment) {
+                    if (err) {
+                        return res.status(400).send({ message: err })
+                    }
+                    return res.status(200).json({ message: 'Assignment Updated' });
+                });
+            } else {
+                return res.status(200).send({ message: 'Not authorized' });
+            }
         } else {
             return res.status(401).send({ message: 'Invalid token' });
         }
