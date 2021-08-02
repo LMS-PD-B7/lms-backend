@@ -29,19 +29,28 @@ module.exports = {
     createAssignment: async function (req, res) {
         let course_db_connect = courseModel.connectDb();
         let course = await course_db_connect.findOne({ _id: new ObjectID(req.params.id) });
-        let newAssignment = assignmentModel.createNewAssignment(req.body, course, req.account);
+        if (course) {
+            if (course.teacher.includes(req.account.email)) {
+                let newAssignment = assignmentModel.createNewAssignment(req.body, course, req.account);
 
-        let db_connect = assignmentModel.connectDb();
+                let db_connect = assignmentModel.connectDb();
 
-        db_connect.insertOne(newAssignment, function (err, assignment) {
-            if (err) {
-                return res.status(400).send({
-                    message: err
-                })
+                db_connect.insertOne(newAssignment, function (err, assignment) {
+                    if (err) {
+                        return res.status(400).send({
+                            message: err
+                        })
+                    } else {
+                        return res.status(200).json({ message: 'Assignment created successfully' });
+                    }
+                });
             } else {
-                return res.status(200).json({ message: 'Assignment created successfully' });
+                return res.status(200).json({ message: 'Not authorized!' });
             }
-        });
+
+        } else {
+            return res.status(200).json({ message: 'Course not found' });
+        }
     },
 
     getAllAssignment: function (req, res) {
@@ -61,7 +70,7 @@ module.exports = {
     getAssignmentinCourse: function (req, res) {
         let db_connect = assignmentModel.connectDb();
         const query = {
-            id_course : new ObjectID(req.params.id)
+            id_course: new ObjectID(req.params.id)
         }
         db_connect.find(query).toArray(function (err, assignment) {
             if (err) {
