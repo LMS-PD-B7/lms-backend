@@ -37,8 +37,24 @@ module.exports = {
                     time.getMinutes()   + ":" + 
                     time.getSeconds(),
             deadline:new Date(),
-            attachment: assignment.attachment,
-            comments: assignment.comments
+            attachment: assignment.attachment//,
+            // comments: assignment.comments
+        }
+    },
+
+    updateSubmissions: function (account, submissions, stat) {
+        return {
+            submissions: {
+                email: account.email,
+                attachment: submissions.attachment,
+                date: time.getDate()        + "-" + 
+                        time.getMonth()     + "-" + 
+                        time.getFullYear()  + " " + 
+                        time.getHours()     + ":" + 
+                        time.getMinutes()   + ":" + 
+                        time.getSeconds(),
+                grade: 0
+            }
         }
     },
 
