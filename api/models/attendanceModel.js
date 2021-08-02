@@ -1,11 +1,24 @@
 'use strict';
 
+const { ObjectID } = require('mongodb');
 var dbo = require('../../db/connection');
 
 module.exports = {
-    createNewAttendance: function (attendance) {
+    createNewAttendance: function (attendance, account, course) {
         const newAttendance = {
-            
+            id_course: new ObjectID(course._id),
+            maker_email: new ObjectID(account.email),
+            title: attendance.title,
+            description: attendance.description,
+            date: time.getDate()        + "-" + 
+                    time.getMonth()     + "-"  + 
+                    time.getFullYear()  + " " + 
+                    time.getHours()     + ":" + 
+                    time.getMinutes()   + ":" + 
+                    time.getSeconds(),
+            late_limit: attendance.late_limit,
+            deadline: new Date(),
+            submission: []
         }
 
         return newAttendance;
@@ -19,6 +32,14 @@ module.exports = {
         }
 
         return db.collection('attendance');
+    },
+
+    updateAttendance: function (attendance) {
+        return {
+            title: attendance.title,
+            description: attendance.description,
+            deadline: new Date()
+        }
     }
 
 }

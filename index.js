@@ -41,6 +41,7 @@ require("./api/routes/assignmentRoute")(app);
 require("./api/routes/courseRoute")(app);
 require("./api/routes/commentRoute")(app);
 require("./api/routes/discussionRoute")(app);
+require("./api/routes/attendanceRoute")(app);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
